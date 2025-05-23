@@ -1,0 +1,36 @@
+{% extends 'cve_app/base.html' %}
+{% block content %}
+<div class="header">
+    <h1>{% if cve %}Edit CVE{% else %}Create New CVE{% endif %}</h1>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="cve_id">CVE ID:</label>
+        <input type="text" id="cve_id" name="cve_id" class="form-control" value="{{ cve.cve_id|default:'' }}" required>
+    </div>
+    <div class="form-group">
+        <label for="identifier">Identifier:</label>
+        <input type="text" id="identifier" name="identifier" class="form-control" value="{{ cve.identifier|default:'' }}" required>
+    </div>
+    <div class="form-group">
+        <label for="published_date">Published Date:</label>
+        <input type="date" id="published_date" name="published_date" class="form-control" value="{{ cve.published_date|date:'Y-m-d'|default:'' }}" required>
+    </div>
+    <div class="form-group">
+        <label for="last_modified_date">Last Modified Date:</label>
+        <input type="date" id="last_modified_date" name="last_modified_date" class="form-control" value="{{ cve.last_modified_date|date:'Y-m-d'|default:'' }}" required>
+    </div>
+    <div class="form-group">
+        <label for="status">Status:</label>
+        <select id="status" name="status" class="form-control" required>
+            <option value="ANALYZED" {% if cve.status == 'ANALYZED' %}selected{% endif %}>Analyzed</option>
+            <option value="MODIFIED" {% if cve.status == 'MODIFIED' %}selected{% endif %}>Modified</option>
+            <option value="REJECTED" {% if cve.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">{% if cve %}Update{% else %}Create{% endif %}</button>
+    <a href="{% url 'cve_list' %}" class="btn btn-danger">Cancel</a>
+</form>
+{% endblock %}

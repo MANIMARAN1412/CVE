@@ -1,0 +1,62 @@
+{% extends 'cve_app/base.html' %}
+{% block content %}
+<div class="header">
+    <h1>CVE LIST</h1>
+    <a href="{% url 'cve_create' %}" class="btn btn-primary">Add New CVE</a>
+</div>
+
+<div class="cve-list">
+
+    {% for cve in page_obj %}
+        <div class="cve-item">
+            <div>
+                <strong>{{ cve.cve_id }}</strong> - {{ cve.status }}
+                <br>
+                <small>Last Modified: {{ cve.last_modified_date }}</small>
+            </div>
+            <div class="cve-actions">
+                <a href="{% url 'cve_detail' cve.id %}" class="btn btn-info">View</a>
+                <a href="{% url 'cve_update' cve.id %}" class="btn btn-primary">Edit</a>
+                <a href="{% url 'cve_delete' cve.id %}" class="btn btn-danger">Delete</a>
+                
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1">&laquo; First</a>
+        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <a class="active" href="?page={{ num }}">{{ num }}</a>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+    {% endif %}
+</div>
+<ul id="cveList" class="cve-list"></ul>
+<script>
+    fetch('/api/cves/')
+        .then(response => response.json())
+        .then(data => {
+            const cveList = document.getElementById('cveList');
+            data.forEach(cve => {
+                const li = document.createElement('li');
+                li.className='btn btn-read';
+                li.innerHTML =` ${cve.cve_id} - ${cve.status}`;
+                li.onclick = () => window.location.href = `/cve/${cve.id}/`;
+                cveList.appendChild(li);
+            });
+        })
+        .catch(error => console.error('Error fetching CVE list:', error));
+    </script>
+{% endblock %}

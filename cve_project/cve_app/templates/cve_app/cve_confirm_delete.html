@@ -1,0 +1,14 @@
+{% extends 'cve_app/base.html' %}
+{% block content %}
+<div class="header">
+    <h1>Delete CVE</h1>
+</div>
+
+<p>Are you sure you want to delete the CVE "{{ cve.cve_id }}"?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+    <a href="{% url 'cve_list' %}" class="btn btn-primary">Cancel</a>
+</form>
+{% endblock %}
